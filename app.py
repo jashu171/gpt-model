@@ -1,10 +1,14 @@
 import streamlit as st
 import google.generativeai as genai
 
+# Set up the API key
+genai.configure(api_key="AIzaSyCUAqGPCnMq-ftOx8tZpN2ihLilmugyOiU")
+
 # Display header and subheader
 st.header("HARSHA GPT")
 st.subheader("Welcome to Harsha GPT 👋")
 
+# Background styling
 st.markdown(
     """
     <style>
@@ -25,36 +29,27 @@ user_input = st.text_input("Enter your query:")
 if st.button("Submit"):
     if user_input:
         st.write(f"You said: {user_input}")
-
-        # Set up the API key
-        genai.configure(api_key="AIzaSyCUAqGPCnMq-ftOx8tZpN2ihLilmugyOiU")
-
-        # Define the Gemini model
-        gemini_2_0 = genai.GenerativeModel(model_name="models/gemini-2.0-flash-exp")
-
-        # Define system instruction as part of the content
-        messages = [
-            {"role": "system", "parts": ["""
+        
+        # Combine instructions with user query
+        full_prompt = f"""
 You are a simple and beginner-friendly assistant. Your task is to respond to questions in the following way:
 
 1. Provide a **simple, easy-to-understand answer** (around 10 lines).
 2. **Include one clear example** for every concept or question.
 3. Provide **reliable links** for further reading on the topic.
 4. **Avoid using complex terminology** or advanced jargon. Keep things straightforward.
-5. Ensure your responses are **short and concise**.
+5. Ensure your responses are **short and concise**. 
 
-Your answers should look like this:
-- **Answer**: [Brief explanation of the concept.]
-- **Example**: [A simple code example or real-life example to clarify the concept.]
-- **References**: [Links to external resources for further reading.]
-"""]},
-            {"role": "user", "parts": [user_input]}
-        ]
+Now answer this query: {user_input}
+"""
+
+        # Set up the Gemini model
+        gemini_model = genai.GenerativeModel(model_name="models/gemini-2.0-flash-exp")
 
         # Generate content
-        response = gemini_2_0.generate_content(messages)
+        response = gemini_model.generate_content(full_prompt)
 
-        # Display the response
+        # Display the generated content
         st.write("AI Response:")
         st.write(response.text)
     else:
